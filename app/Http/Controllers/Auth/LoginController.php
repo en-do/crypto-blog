@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
@@ -42,9 +43,15 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        if ( true ) {
+
+        $date = Carbon::now();
+
+        if ( isset($user->expired_at) and $user->expired_at->lte($date) ) {
             Auth::logout();
-            return redirect('login')->withErrors(['permission' => "Your permission has expired"]);
+
+            $date = $user->expired_at->format('d/m/Y');
+
+            return redirect()->route('login')->withErrors(['permission' => "Your permission has expired: $date"]);
         }
     }
 }

@@ -18,6 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'role_id',
         'name',
         'email',
         'password',
@@ -42,6 +43,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'expired_at'
+    ];
+
     public function role() {
         return $this->belongsTo(Role::class);
     }
@@ -51,6 +58,10 @@ class User extends Authenticatable
     }
 
     public function permission() {
-        return $this->belongsTo(PermissionUser::class);
+        return $this->belongsToMany(Domain::class, 'permission_users');
+    }
+
+    public function checkedDomain($domain_id) {
+        return $this->permission()->where('domain_id', $domain_id)->exists();
     }
 }

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +22,20 @@ class Post extends Model
         'view'
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+
+            if(Post::where('slug', $model->slug)->exists()) {
+                $time = time();
+
+                $model->slug = "$model->slug-$time";
+            }
+        });
+    }
+
     public function user() {
         return $this->belongsTo(User::class);
     }
@@ -31,5 +46,9 @@ class Post extends Model
 
     public function meta() {
         return $this->hasOne(Meta::class);
+    }
+
+    public function checkedDomain($domain_id) {
+        return $this->domains()->where('domain_id', $domain_id)->exists();
     }
 }

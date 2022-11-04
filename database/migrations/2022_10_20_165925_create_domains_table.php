@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('title');
+            $table->string('favicon')->nullable();
             $table->string('host')->unique();
             $table->string('template');
             $table->enum('status', ['published', 'draft'])->default('published');

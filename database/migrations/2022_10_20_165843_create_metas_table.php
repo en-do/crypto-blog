@@ -16,10 +16,11 @@ return new class extends Migration
         Schema::create('metas', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('post_id');
+            $table->integer('post_id')->nullable();
+            $table->integer('domain_id')->nullable();
             $table->string('title');
-            $table->text('description');
-            $table->boolean('no_index');
+            $table->text('description')->nullable();
+            $table->boolean('no_index')->default(0);
 
             $table->timestamps();
         });

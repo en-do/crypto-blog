@@ -1,9 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-6">
+
+            @error('permission')
+                <div class="alert bg-warning">{{ $message }}</div>
+            @enderror
+
             <div class="card">
                 <div class="card-header">{{ __('Login') }}</div>
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->integer('domain_id');
-            $table->integer('category_id');
+            $table->string('key')->nullable();
             $table->string('query');
             $table->string('category');
             $table->string('language');

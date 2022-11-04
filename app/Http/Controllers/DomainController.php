@@ -2,67 +2,135 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+use App\Models\Domain;
 
 class DomainController extends Controller
 {
-    public function home() {
-        $template = resolve('template');
-        $domain_id = resolve('domain_id');
+    /**
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function list() {
+        if(auth()->user()->cannot('domain-list')) {
+            abort(403);
+        }
 
-        $post = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published');
+        $domains = Domain::paginate(10);
 
-        $tops = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->orderBy('view', 'desc')->limit(3)->get();
-
-        $posts = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->orderBy('created_at', 'desc')->paginate(10);
-
-        $ticker = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->inRandomOrder()->orderBy('created_at', 'desc')->limit(12)->get();
-
-        $latest = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->orderBy('created_at', 'desc')->limit(3)->get();
-
-        return view("templates.$template.home", compact('ticker', 'tops', 'latest', 'posts'));
+        return view('dashboard.domains.list', compact('domains'));
     }
 
-    public function post($slug) {
-        $template = resolve('template');
-        $domain_id = resolve('domain_id');
+    /**
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function add() {
+        if(auth()->user()->cannot('domain-add')) {
+            abort(403);
+        }
 
-        $single = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->where('slug', $slug)->firstOrFail();
+        $templates = Storage::disk("template")->directories();
 
-        $related = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->whereNotIn('id', [$single->id])->inRandomOrder()->limit(3)->get();
+        return view('dashboard.domains.add', compact('templates'));
+    }
 
-        $single->update([
-            'view' => $single->view + 1
+    /**
+     * @param $domain_id
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function edit($domain_id) {
+        if(auth()->user()->cannot('domain-edit')) {
+            abort(403);
+        }
+
+        $domain = Domain::findOrFail($domain_id);
+        $templates = Storage::disk("template")->directories();
+
+        return view('dashboard.domains.edit', compact('domain', 'templates'));
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function create(Request $request) {
+        if(auth()->user()->cannot('domain-create')) {
+            abort(403);
+        }
+
+        $request->validate([
+            'title' => ['required', 'string', 'min:4'],
+            'host' => ['required', 'string', 'min:4', 'unique:domains'],
+            'template' => ['required', 'string'],
+            'status' => ['required', 'string', 'in:published,draft']
         ]);
 
-        return view("templates.$template.post", compact('single', 'related'));
+        $domain = new Domain;
+        $domain->template = $request->template;
+        $domain->host = $request->host;
+        $domain->title = $request->title;
+        $domain->status = $request->status;
+
+        if($domain->saveOrFail()) {
+            $domain->meta()->create([
+                'title' => $request->meta_title,
+                'description' => $request->meta_description,
+                'no_index' => $request->index ?? 0
+            ]);
+
+            return redirect()->route('dashboard.domains')->width('success', 'Domain created');
+        }
     }
 
-    public function search(Request $request) {
-        $template = resolve('template');
-        $domain_id = resolve('domain_id');
+    /**
+     * @param Request $request
+     * @param $domain_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, $domain_id) {
+        if(auth()->user()->cannot('domain-update')) {
+            abort(403);
+        }
 
-        $title = $request->q;
+        $request->validate([
+            'title' => ['required', 'string', 'min:4'],
+            'host' => ['required', 'string', 'min:4', 'unique:domains,host,' . $domain_id],
+            'template' => ['required', 'string'],
+            'status' => ['required', 'string', 'in:published,draft']
+        ]);
 
-        $posts = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->where('title', 'LIKE', "%$title%")->whereStatus('published')->paginate(10);
+        $domain = Domain::findOrFail($domain_id);
+        $domain->template = $request->template;
+        $domain->host = $request->host;
+        $domain->title = $request->title;
+        $domain->status = $request->status;
 
-        return view("templates.$template.search", compact('posts'));
+        if($domain->saveOrFail()) {
+            $domain->meta()->update([
+                'title' => $request->meta_title ?? null,
+                'description' => $request->meta_description ?? null,
+                'no_index' => $request->index ?? 0
+            ]);
+
+            return redirect()->route('dashboard.domains')->with('success', 'Domain created');
+        }
+    }
+
+    /**
+     * @param $domain_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete($domain_id) {
+        if(auth()->user()->cannot('domain-delete')) {
+            abort(403);
+        }
+
+        $domain = Domain::findOrFail($domain_id);
+
+        if($domain->delete()) {
+            return redirect()->route('dashboard.domains')->with('success', 'Domain deleted');
+        }
     }
 }

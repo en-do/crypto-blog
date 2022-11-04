@@ -13,10 +13,30 @@ import { createApp } from 'vue';
  * to use in your application's views. An example is included for you.
  */
 
-const app = createApp({});
+const app = createApp({
+
+    methods: {
+        onDelete: function (event) {
+            if(confirm("Do you really want to delete it?")) {
+                event.submit()
+            }
+        },
+
+        onPush: function (event) {
+            if(confirm("Do you really want to create a post with a template?")) {
+                event.target
+            }
+        }
+    }
+});
 
 import ExampleComponent from './components/ExampleComponent.vue';
+import EditorComponent from "./components/EditorComponent.vue";
+import CodeComponent from "./components/CodeComponent.vue";
+
 app.component('example-component', ExampleComponent);
+app.component('editor-component', EditorComponent);
+app.component('add-code-component', CodeComponent);
 
 /**
  * The following block of code may be used to automatically register your

@@ -16,12 +16,16 @@ return new class extends Migration
         Schema::create('post_templates', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('domain_id');
+            $table->integer('user_id');
+            $table->integer('domain_id')->nullable();
             $table->string('image');
             $table->string('title');
             $table->text('vars');
             $table->text('content');
-            $table->integer('order');
+            $table->integer('order')->default(0);
+            $table->string('slug');
+            $table->string('meta_title')->nullable();
+            $table->string('meta_description')->nullable();
             $table->softDeletes();
 
             $table->timestamps();

@@ -13,13 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('permission_users', function (Blueprint $table) {
+        Schema::create('post_domains', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('user_id');
-            $table->date('expired_at')->nullable();
+            $table->bigInteger('post_id')->unsigned();
+            $table->bigInteger('domain_id')->unsigned();
 
-            $table->timestamps();
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+            $table->foreign('domain_id')->references('id')->on('domains')->onDelete('cascade');
+
         });
     }
 
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('permission_users');
+        Schema::dropIfExists('post_domains');
     }
 };
