@@ -17,14 +17,14 @@ return new class extends Migration
             $table->id();
 
             $table->integer('domain_id');
-            $table->string('key')->nullable();
             $table->string('query');
-            $table->string('category');
-            $table->string('language');
-            $table->string('country');
-            $table->string('sort_by');
-            $table->date('from_at');
-            $table->date('to_at');
+            $table->string('language')->default('en');
+            $table->string('country')->nullable();
+            $table->date('from_at')->nullable();
+            $table->date('to_at')->nullable();
+            $table->enum('sort', ['relevancy', 'popularity', 'publishedAt', 'random'])->default('publishedAt');
+            $table->integer('limit')->default(100);
+            $table->boolean('active')->default(false);
             $table->softDeletes();
 
             $table->timestamps();

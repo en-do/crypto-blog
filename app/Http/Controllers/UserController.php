@@ -110,9 +110,7 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
         }
 
-        if($request->filled('domain')) {
-            $user->permission()->sync($request->domain);
-        }
+        $user->permission()->sync($request->domain);
 
         if($request->filled('expired')) {
             $user->expired_at = $request->expired;

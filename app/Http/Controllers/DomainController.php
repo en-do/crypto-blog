@@ -75,12 +75,12 @@ class DomainController extends Controller
 
         if($domain->saveOrFail()) {
             $domain->meta()->create([
-                'title' => $request->meta_title,
-                'description' => $request->meta_description,
+                'title' => $request->meta_title ?? $domain->title,
+                'description' => $request->meta_description ?? null,
                 'no_index' => $request->index ?? 0
             ]);
 
-            return redirect()->route('dashboard.domains')->width('success', 'Domain created');
+            return redirect()->route('dashboard.domains')->with('success', 'Domain created');
         }
     }
 
@@ -109,7 +109,7 @@ class DomainController extends Controller
 
         if($domain->saveOrFail()) {
             $domain->meta()->update([
-                'title' => $request->meta_title ?? null,
+                'title' => $request->meta_title ?? $domain->title,
                 'description' => $request->meta_description ?? null,
                 'no_index' => $request->index ?? 0
             ]);

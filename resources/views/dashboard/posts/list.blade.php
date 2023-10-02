@@ -10,9 +10,15 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="alert alert-warning" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="row">
                 <div class="col-12 col-md-10">
-                    <form method="get">
+                    <form action="{{ route('dashboard.post.search') }}" method="get">
                         <div class="input-group mb-0">
                             <input type="text" class="form-control" name="q" placeholder="Search title" aria-label="search" value="{{ request('q') }}">
                             <button class="btn btn-outline-primary" type="submit" id="button-addon2">Search</button>
@@ -41,12 +47,13 @@
                             <th>Slug</th>
                             <th>Domain</th>
                             <th>Status</th>
+                            <th>Meta</th>
                             <th>Date</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
-                        @if($posts->count() > 0)
+                        @if($posts && $posts->count() > 0)
                             @foreach($posts as $post)
                                 <tr>
                                     <td>{{ $post->id }}</td>
@@ -80,14 +87,17 @@
                                         {{ $post->status }}
                                     </td>
                                     <td>
+                                        <div style="width: 15px;height: 15px;" class="{{ $post->seoRate() }}"></div>
+                                    </td>
+                                    <td>
                                         <div class="form-text">
-                                            {{ $post->updated_at }}
+                                            {{ $post->updated_at->format('d/m/Y H:i') }}
                                         </div>
                                     </td>
                                     <td align="right">
                                         <a href="{{ route('dashboard.post.view', $post->id) }}" class="btn btn-warning text-dark btn-sm mx-1">View</a>
                                         <a href="{{ route('dashboard.post.edit', $post->id) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
-                                        <form action="{{ route('dashboard.post.delete', $post->id) }}" method="post" class="d-inline-block" @submit="onDelete()">
+                                        <form action="{{ route('dashboard.post.delete', $post->id) }}" method="post" class="d-inline-block my-2" @submit="onDelete($event)">
                                             @csrf
                                             @method('delete')
 
@@ -98,7 +108,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="6" align="center">Not found items</td>
+                                <td colspan="7" align="center">Not found items</td>
                             </tr>
                         @endif
                         </tbody>
@@ -107,7 +117,7 @@
                 </div>
             </div>
 
-            {{ $posts->links() }}
+            {!! $posts->render() !!}
 
         </div>
     </section>

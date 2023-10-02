@@ -13,7 +13,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Image</label>
-                            <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">
+                            <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" required>
 
                             @error('title')
                                 <span class="invalid-feedback" role="alert">
@@ -61,7 +61,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Title</label>
-                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}">
+                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}" minlength="6" required>
 
                             @error('title')
                                 <span class="invalid-feedback" role="alert">
@@ -83,7 +83,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Slug</label>
-                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}">
+                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" minlength="6">
 
                             @error('slug')
                                 <span class="invalid-feedback" role="alert">
@@ -122,7 +122,7 @@
 
                             <div class="mb-4">
                                 <label for="" class="form-label">Status</label>
-                                <select name="status" class="form-select @error('status') is-invalid @enderror" id="">
+                                <select name="status" class="form-select @error('status') is-invalid @enderror" id="" required>
                                     <option value="published">published</option>
                                     <option value="draft">draft</option>
                                     <option value="moderation">moderation</option>
@@ -143,7 +143,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Meta Title</label>
-                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') }}">
+                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') }}" minlength="6">
 
                             @error('meta_title')
                                 <span class="invalid-feedback" role="alert">

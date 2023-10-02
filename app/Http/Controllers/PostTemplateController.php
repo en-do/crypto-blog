@@ -67,7 +67,8 @@ class PostTemplateController extends Controller
      * @param $template_id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function save(Post $post, $template_id) {
+    public function save(Post $post, $template_id)
+    {
         $template = PostTemplate::findOrFail($template_id);
 
         $post->title = $template->title;
@@ -75,7 +76,11 @@ class PostTemplateController extends Controller
         $post->image = $template->image;
         $post->slug = $template->slug;
 
-        $post->content = $this->getContent($template->vars, $template->content);
+        if ($template->vars) {
+            $post->content = $this->getContent($template->vars, $template->content);
+        } else {
+            $post->content = $template->content;
+        }
 
         if($post->save()) {
             $post->meta()->create([
@@ -84,7 +89,7 @@ class PostTemplateController extends Controller
                 'no_index' => $request->index ?? 0
             ]);
 
-            return redirect()->route('dashboard.templates')->with('success', 'Template published');
+            return redirect()->route('dashboard.post.edit', $post->id)->with('success', 'Template published');
         }
 
     }
@@ -97,8 +102,7 @@ class PostTemplateController extends Controller
         $request->validate([
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
             'title' => ['required', 'min:6', 'max:255'],
-            'option' => ['required'],
-            'description' => ['required', 'min:6'],
+            'description' => ['nullable', 'min:6'],
             'slug' => ['nullable', 'min:6', 'max:255', 'unique:posts']
         ]);
 
@@ -157,8 +161,7 @@ class PostTemplateController extends Controller
         $request->validate([
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
             'title' => ['required', 'min:6', 'max:255'],
-            'option' => ['required'],
-            'description' => ['required', 'min:6'],
+            'description' => ['nullable', 'min:6'],
             'slug' => ['nullable', 'min:6', 'max:255', 'unique:posts,slug,'. $template_id]
         ]);
 

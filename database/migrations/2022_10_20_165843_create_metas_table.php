@@ -22,6 +22,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('no_index')->default(0);
 
+            $table->text('audits')->nullable();
+            $table->text('scores')->nullable();
+
             $table->timestamps();
         });
     }

@@ -32,6 +32,10 @@
                     <ul class="navbar-nav me-auto">
                         @auth
                             <li class="nav-item">
+                                <a href="{{ route('dashboard') }}" class="nav-link">Main</a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a href="{{ route('dashboard.posts') }}" class="nav-link">Posts</a>
                             </li>
 
@@ -42,6 +46,12 @@
                             @can('domain-list', \Domain::class)
                                 <li class="nav-item">
                                     <a href="{{ route('dashboard.domains') }}" class="nav-link">Domains</a>
+                                </li>
+                            @endcan
+
+                            @can('parsing')
+                                <li class="nav-item">
+                                    <a href="{{ route('dashboard.parsing') }}" class="nav-link">Parser</a>
                                 </li>
                             @endcan
 

@@ -68,10 +68,10 @@
                                         </div>
                                     </td>
                                     <td align="right">
-                                        <a href="{{ route('dashboard.template.save', $template->id) }}" class="btn btn-outline-secondary btn-sm mx-1" @click="onPush()">Push post</a>
+                                        <a href="{{ route('dashboard.template.save', $template->id) }}" class="btn btn-outline-secondary btn-sm mx-1" @click="onPush($event)">Push post</a>
                                         <a href="{{ route('dashboard.template.view', $template->id) }}" class="btn btn-warning text-dark btn-sm mx-1">View</a>
                                         <a href="{{ route('dashboard.template.edit', $template->id) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
-                                        <form action="{{ route('dashboard.template.delete', $template->id) }}" method="post" class="d-inline-block" @submit="onDelete()">
+                                        <form action="{{ route('dashboard.template.delete', $template->id) }}" method="post" class="d-inline-block my-2" @submit="onDelete($event)">
                                             @csrf
                                             @method('delete')
 

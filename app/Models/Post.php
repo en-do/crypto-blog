@@ -51,4 +51,24 @@ class Post extends Model
     public function checkedDomain($domain_id) {
         return $this->domains()->where('domain_id', $domain_id)->exists();
     }
+
+    public function seoRate() {
+        if($this->meta->no_index) {
+            return 'rounded-circle bg-danger';
+        }
+
+        if($this->status == 'published') {
+            if($this->meta->title && $this->meta->description) {
+                if(strlen($this->meta->description) > 80) {
+                    return 'rounded-circle bg-success';
+                }
+
+                return 'rounded-circle bg-warning';
+            }
+
+            return 'rounded-circle bg-secondary';
+        }
+
+        return 'rounded-circle bg-danger';
+    }
 }

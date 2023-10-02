@@ -22,7 +22,7 @@
 
             @if($single->image)
                 <div class="pb-4">
-                    <img src="{{ $single->image }}" alt="" class="img-fluid">
+                    <img src="{{ $single->image }}" alt="{{ $single->title }}" class="img-fluid">
                 </div>
             @endif
 
@@ -59,7 +59,7 @@
                                         <div class="card-body">
                                             <h5>{{ $post->title }}</h5>
 
-                                            {{  \Str::limit($post->content, 150) }}
+                                            {{ \Str::of(strip_tags($post->content))->words(100, '...') }}
                                         </div>
 
                                         <span class="card-footer">

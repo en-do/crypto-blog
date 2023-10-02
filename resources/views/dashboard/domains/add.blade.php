@@ -24,7 +24,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Template</label>
-                            <select name="template" class="form-select @error('template') is-invalid @enderror" id="">
+                            <select name="template" class="form-select @error('template') is-invalid @enderror" id="" required>
                                 @foreach($templates as $template)
                                     <option value="{{ $template }}">{{ $template }}</option>
                                 @endforeach
@@ -39,7 +39,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Title</label>
-                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}">
+                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}" required>
 
                             @error('title')
                                 <span class="invalid-feedback" role="alert">
@@ -50,7 +50,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Host</label>
-                            <input type="text" name="host" class="form-control @error('host') is-invalid @enderror" value="{{ old('host') }}">
+                            <input type="text" name="host" class="form-control @error('host') is-invalid @enderror" value="{{ old('host') }}" required>
 
                             @error('host')
                                 <span class="invalid-feedback" role="alert">
@@ -61,7 +61,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Status</label>
-                            <select name="status" class="form-select @error('status') is-invalid @enderror" id="">
+                            <select name="status" class="form-select @error('status') is-invalid @enderror" id="" required>
                                 <option value="published">published</option>
                                 <option value="draft">draft</option>
                             </select>

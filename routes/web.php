@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostTemplateController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ParsingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,14 +24,14 @@ use App\Http\Controllers\DashboardController;
 Route::prefix('dashboard')->group(function () {
     Auth::routes(); // ['register' => false]
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'permission'])->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('posts', [PostController::class, 'list'])->name('dashboard.posts');
         Route::get('posts/add', [PostController::class, 'add'])->name('dashboard.post.add');
         Route::get('posts/{post_id}', [PostController::class, 'edit'])->name('dashboard.post.edit');
         Route::get('posts/{post_id}/view', [PostController::class, 'view'])->name('dashboard.post.view');
         Route::post('posts', [PostController::class, 'create'])->name('dashboard.post.create');
+        Route::any('search/posts', [PostController::class, 'search'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('dashboard.post.search');
         Route::put('posts/{post_id}', [PostController::class, 'update'])->name('dashboard.post.update');
         Route::delete('posts/{post_id}', [PostController::class, 'delete'])->name('dashboard.post.delete');
         Route::post('upload/images', [PostController::class, 'upload']);
@@ -50,6 +51,13 @@ Route::prefix('dashboard')->group(function () {
         Route::post('domains', [DomainController::class, 'create'])->name('dashboard.domain.create');
         Route::put('domains/{domain_id}', [DomainController::class, 'update'])->name('dashboard.domain.update');
         Route::delete('domains/{domain_id}', [DomainController::class, 'delete'])->name('dashboard.domain.delete');
+
+        Route::get('parsing', [ParsingController::class, 'list'])->name('dashboard.parsing');
+        Route::get('parsing/add', [ParsingController::class, 'add'])->name('dashboard.parsing.add');
+        Route::get('parsing/{id}', [ParsingController::class, 'edit'])->name('dashboard.parsing.edit');
+        Route::post('parsing', [ParsingController::class, 'create'])->name('dashboard.parsing.create');
+        Route::put('parsing/{id}', [ParsingController::class, 'update'])->name('dashboard.parsing.update');
+        Route::delete('parsing/{id}', [ParsingController::class, 'delete'])->name('dashboard.parsing.delete');
 
         Route::get('users', [UserController::class, 'list'])->name('dashboard.users');
         Route::get('users/add', [UserController::class, 'add'])->name('dashboard.user.add');

@@ -4,6 +4,12 @@
     <section>
         <div class="container">
 
+            @if (session('success'))
+                <div class="alert alert-success" role="alert">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <form action="{{ route('dashboard.post.update', $post->id) }}" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('put')
@@ -67,7 +73,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Title</label>
-                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') ?? $post->title }}">
+                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') ?? $post->title }}" minlength="6" required>
 
                             @error('title')
                                 <span class="invalid-feedback" role="alert">
@@ -78,6 +84,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Content</label>
+
                             <editor-component content="{{ old('description') ?? $post->content }}"></editor-component>
 
                             @error('description')
@@ -89,7 +96,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Slug</label>
-                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') ?? $post->slug }}">
+                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') ?? $post->slug }}" minlength="6">
 
                             @error('slug')
                                 <span class="invalid-feedback" role="alert">
@@ -150,7 +157,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Meta Title</label>
-                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') ?? $post->meta->title }}">
+                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') ?? $post->meta->title }}" minlength="6">
 
                             @error('meta_title')
                                 <span class="invalid-feedback" role="alert">

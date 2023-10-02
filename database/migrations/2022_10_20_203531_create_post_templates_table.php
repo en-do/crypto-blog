@@ -20,8 +20,8 @@ return new class extends Migration
             $table->integer('domain_id')->nullable();
             $table->string('image');
             $table->string('title');
-            $table->text('vars');
-            $table->text('content');
+            $table->text('vars')->nullable();
+            $table->text('content')->nullable();
             $table->integer('order')->default(0);
             $table->string('slug');
             $table->string('meta_title')->nullable();

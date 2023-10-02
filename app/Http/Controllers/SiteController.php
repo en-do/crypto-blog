@@ -18,21 +18,15 @@ class SiteController extends Controller
 
         $domain = Domain::findOrFail($domain_id);
 
-        $tops = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->orderBy('view', 'desc')->limit(3)->get();
-
         $posts = Post::whereHas('domains', function($q) use($domain_id) {
             $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->orderBy('created_at', 'desc')->paginate(10);
+        })->where('status', 'published')->orderBy('updated_at', 'desc')->paginate(10);
 
-        $ticker = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->inRandomOrder()->orderBy('created_at', 'desc')->limit(12)->get();
+        $tops = $posts->take(3);
 
-        $latest = Post::whereHas('domains', function($q) use($domain_id) {
-            $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->orderBy('created_at', 'desc')->limit(3)->get();
+        $ticker = $posts->take(12);
+
+        $latest = $posts->take(3);
 
         return view("templates.$template.home", compact('domain', 'ticker', 'tops', 'latest', 'posts'));
     }
@@ -51,7 +45,7 @@ class SiteController extends Controller
 
         $related = Post::whereHas('domains', function($q) use($domain_id) {
             $q->where('domain_id', $domain_id);
-        })->whereStatus('published')->whereNotIn('id', [$single->id])->inRandomOrder()->limit(3)->get();
+        })->whereStatus('published')->whereNotIn('id', [$single->id])->limit(3)->get();
 
         $single->update([
             'view' => $single->view + 1

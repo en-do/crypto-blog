@@ -19,12 +19,18 @@ const app = createApp({
         onDelete: function (event) {
             if(confirm("Do you really want to delete it?")) {
                 event.submit()
+            } else {
+                event.preventDefault()
             }
         },
 
         onPush: function (event) {
+
+
             if(confirm("Do you really want to create a post with a template?")) {
-                event.target
+                event.target;
+            } else {
+                event.preventDefault()
             }
         }
     }

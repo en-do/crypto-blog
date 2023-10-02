@@ -12,11 +12,12 @@ use App\Models\Post;
 use App\Models\User;
 
 use App\Services\Traits\UploadImage;
+use App\Services\Traits\LighthouseAPI;
 
 
 class PostController extends Controller
 {
-    use UploadImage;
+    use UploadImage, LighthouseAPI;
 
     public string $path_image = "images/post";
 
@@ -24,21 +25,10 @@ class PostController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function list(Request $request) {
-        $post = Post::query();
+    public function list() {
+        $posts = Post::with(['user', 'domains'])->orderBy('updated_at', 'desc')->paginate(15);
 
-        if($request->filled('q')) {
-            $title = $request->q;
-            $post->where('title', 'like', "%$title%");
-        }
-
-        if(auth()->user()->cannot('post-all')) {
-            $post->where('user_id', Auth::id());
-        }
-
-        $posts = $post->paginate(10);
-
-        return view('dashboard.posts.list', compact('posts'));
+        return view('dashboard.posts.list')->withPosts($posts);
     }
 
     /**
@@ -49,6 +39,25 @@ class PostController extends Controller
         $post = Post::findOrFail($post_id);
 
         return view('dashboard.posts.view', compact('post'));
+    }
+
+    public function search(Request $request) {
+        $q = $request->get('q');
+        
+        if($request->filled('q')){
+            $posts = Post::where('title', 'LIKE', '%' . $q . '%')->paginate(15);
+
+            $posts->appends(array (
+                'q' => $q,
+                'page' => $request->get('page') ?? 1
+            ));
+
+            if ($posts->count() > 0) {
+                return view( 'dashboard.posts.list', compact('posts'))->withQuery($q);
+            }
+        }
+
+        return redirect()->route( 'dashboard.posts')->with('error', 'No Post found. Try to search again!');
     }
 
     /**
@@ -73,7 +82,6 @@ class PostController extends Controller
      */
     public function edit($post_id) {
         $post = Post::findOrFail($post_id);
-
 
         if(auth()->user()->cannot('post-update', $post)) {
             abort(403);
@@ -102,7 +110,7 @@ class PostController extends Controller
             'domain.*' => ['required', 'numeric'],
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
             'title' => ['required', 'min:6', 'max:255'],
-            'description' => ['required', 'min:6'],
+            'description' => ['nullable', 'min:6'],
             'slug' => ['nullable', 'min:6', 'max:255', 'unique:posts'],
             'order' => ['nullable', 'numeric', 'min:0'],
             'status' => ['required', 'in:published,draft,moderation']
@@ -118,9 +126,7 @@ class PostController extends Controller
             }
         }
 
-        $post->image = $request->image;
         $post->title = $request->title;
-
         $post->content = $request->description;
 
         if($request->hasFile('image')) {
@@ -147,7 +153,10 @@ class PostController extends Controller
             $post->meta()->create([
                 'title' => $request->meta_title ?? $request->title,
                 'description' => $request->meta_description ?? null,
-                'no_index' => $request->index ?? 0
+                'no_index' => $request->index ?? 0,
+
+                'audits' => '',
+                'scores' => ''
             ]);
 
             return redirect()->route('dashboard.posts')->with('success', 'Post created');
@@ -165,7 +174,7 @@ class PostController extends Controller
             'domain.*' => ['required', 'numeric'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
             'title' => ['required', 'string', 'min:6', 'max:255'],
-            'description' => ['required', 'min:6'],
+            'description' => ['nullable', 'min:6'],
             'slug' => ['nullable', 'min:6', 'max:255', 'unique:posts,slug,' . $post_id],
             'order' => ['nullable', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'in:published,draft,moderation']
@@ -185,7 +194,6 @@ class PostController extends Controller
             }
         }
 
-        $post->image = $request->image;
         $post->title = $request->title;
 
         $post->content = $request->description;
@@ -214,7 +222,10 @@ class PostController extends Controller
             $post->meta()->update([
                 'title' => $request->meta_title ?? $request->title,
                 'description' => $request->meta_description ?? null,
-                'no_index' => $request->index ?? 0
+                'no_index' => $request->index ?? 0,
+
+                'audits' => '',
+                'scores' => ''
             ]);
 
             return redirect()->route('dashboard.posts')->with('success', 'Post updated');
@@ -235,6 +246,28 @@ class PostController extends Controller
         if($post->delete()) {
             return redirect()->route('dashboard.posts')->with('success', 'Post deleted');
         }
+    }
+
+    public function check($post_id) {
+        $post = Post::findOrFail($post_id);
+
+        $post->meta()->update([
+            'title' => $post->meta_title ?? '',
+            'description' => $post->meta_description ?? null,
+            'no_index' => $post->index,
+
+            'audits' => $this->getReportPost(),
+            'scores' => ''
+        ]);
+
+        if($post->save()) {
+            return view()->with('success', 'received scores and audits for recording');
+        }
+    }
+
+    public function test() {
+        $result = $this->getReportPost();
+        print_r($result);
     }
 
     /**

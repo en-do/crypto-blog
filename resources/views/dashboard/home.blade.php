@@ -41,6 +41,13 @@
             </div>
 
         @else
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Expired date</h6>
+                        {{ auth()->user()->expired_at->format('d/m/Y') ?? 'no limits' }}
+                    </div>
+                </div>
+
                 <div class="card mt-4">
                     <div class="table-responsive">
 
@@ -53,6 +60,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+                            @if($domains->count() > 0)
                                 @foreach($domains as $domain)
                                     <tr>
                                         <td>{{ $domain->id }}</td>
@@ -69,6 +77,11 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="6" align="center">Not found items</td>
+                                </tr>
+                            @endif
                             </tbody>
                         </table>
 

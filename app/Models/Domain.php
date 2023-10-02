@@ -26,4 +26,8 @@ class Domain extends Model
     public function meta() {
         return $this->hasOne(Meta::class);
     }
+
+    public function parsings() {
+        return $this->hasMany(Parsing::class);
+    }
 }

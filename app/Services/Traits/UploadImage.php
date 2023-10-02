@@ -13,11 +13,17 @@ trait UploadImage {
      * @param int $quality
      * @return false|string
      */
-    public function uploadImage($image, $path, $name, $quality = 100) {
+    public function uploadImage($image, $path, $name, $quality = 100, $request = true) {
         $original_path = "/public/$path";
         $image_name = $this->createName($name);
 
-        $contents = file_get_contents($image->getRealPath());
+
+        if($request) {
+            $contents = file_get_contents($image->getRealPath());
+        } else {
+            $contents = file_get_contents($image);
+        }
+
         $create_image = @imagecreatefromstring($contents);
 
         if ($create_image) {

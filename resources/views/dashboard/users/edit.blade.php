@@ -13,7 +13,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') ?? $user->name }}">
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') ?? $user->name }}" required>
 
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
@@ -24,7 +24,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') ?? $user->email }}">
+                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') ?? $user->email }}" required>
 
                             @error('email')
                                 <span class="invalid-feedback" role="alert">

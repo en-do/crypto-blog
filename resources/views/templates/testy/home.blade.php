@@ -30,13 +30,13 @@
                             <div class="col-12 col-md-4">
                                 <a href="{{ route('domain.post', $post->slug) }}" class="card mb-4">
                                     <div class="image">
-                                        <img src="{{ $post->image }}" alt="" class="img-fluid">
+                                        <img src="{{ $post->image }}" alt="{{ $post->title }}" class="img-fluid">
                                     </div>
 
                                     <div class="card-body">
                                         <h5>{{ $post->title }}</h5>
 
-                                        {{  \Str::limit($post->content, 150) }}
+                                        {{ \Str::of(strip_tags($post->content))->words(100, '...') }}
                                     </div>
 
                                     <div class="card-footer">
@@ -99,13 +99,13 @@
                             <div class="col-12 col-md-6">
                                 <a href="{{ route('domain.post', $post->slug) }}" class="card mb-4">
                                     <div class="image">
-                                        <img src="{{ $post->image }}" alt="" class="img-fluid">
+                                        <img src="{{ $post->image }}" alt="{{ $post->title }}" class="img-fluid">
                                     </div>
 
                                     <div class="card-body">
                                         <h5>{{ $post->title }}</h5>
 
-                                        {{  \Str::limit($post->content, 150) }}
+                                        {{ \Str::of(strip_tags($post->content))->words(100, '...') }}
                                     </div>
 
                                     <span class="card-footer">

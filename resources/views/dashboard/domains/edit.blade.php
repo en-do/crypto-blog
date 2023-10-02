@@ -24,7 +24,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Template</label>
-                            <select name="template" class="form-select @error('template') is-invalid @enderror" id="">
+                            <select name="template" class="form-select @error('template') is-invalid @enderror" id="" required>
                                 @foreach($templates as $template)
                                     <option value="{{ $template }}" @selected($template == $domain->template)>{{ $template }}</option>
                                 @endforeach
@@ -39,7 +39,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Title</label>
-                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') ?? $domain->title }}">
+                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') ?? $domain->title }}" required>
 
                             @error('title')
                                 <span class="invalid-feedback" role="alert">
@@ -50,7 +50,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Host</label>
-                            <input type="text" name="host" class="form-control @error('host') is-invalid @enderror" value="{{ old('host') ?? $domain->host }}">
+                            <input type="text" name="host" class="form-control @error('host') is-invalid @enderror" value="{{ old('host') ?? $domain->host }}" required>
 
                             @error('host')
                                 <span class="invalid-feedback" role="alert">
@@ -61,7 +61,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Status</label>
-                            <select name="status" class="form-select @error('status') is-invalid @enderror" id="">
+                            <select name="status" class="form-select @error('status') is-invalid @enderror" id="" required>
                                 <option value="published" @selected($domain->status == "published")>published</option>
                                 <option value="draft" @selected($domain->status == "draft")>draft</option>
                             </select>
@@ -81,7 +81,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Meta Title</label>
-                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') ?? $domain->meta->title }}">
+                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') ?? $domain->meta->title ?? null }}">
 
                             @error('meta_title')
                                 <span class="invalid-feedback" role="alert">
@@ -92,7 +92,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Meta Description</label>
-                            <input type="text" name="meta_description" class="form-control @error('meta_description') is-invalid @enderror" value="{{ old('meta_description') ?? $domain->meta->description }}">
+                            <input type="text" name="meta_description" class="form-control @error('meta_description') is-invalid @enderror" value="{{ old('meta_description') ?? $domain->meta->description ?? null }}">
 
                             @error('meta_description')
                             <span class="invalid-feedback" role="alert">

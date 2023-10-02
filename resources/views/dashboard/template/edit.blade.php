@@ -48,7 +48,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Title</label>
-                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}">
+                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}" minlength="6" required>
 
                             @error('title')
                                 <span class="invalid-feedback" role="alert">
@@ -75,7 +75,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Slug</label>
-                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') ?? $template->slug }}">
+                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') ?? $template->slug }}" minlength="6">
 
                             @error('slug')
                                 <span class="invalid-feedback" role="alert">
@@ -106,7 +106,7 @@
 
                         <div class="mb-4">
                             <label for="" class="form-label">Meta Title</label>
-                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') ?? $template->meta_title }}">
+                            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ old('meta_title') ?? $template->meta_title }}" minlength="6">
 
                             @error('meta_title')
                                 <span class="invalid-feedback" role="alert">

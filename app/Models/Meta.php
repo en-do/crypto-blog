@@ -18,6 +18,8 @@ class Meta extends Model
         'title',
         'description',
         'no_index',
+        'audits',
+        'scores'
     ];
 
     public function post() {

@@ -8,7 +8,7 @@
             [{ 'header': 1 }, { 'header': 2 }],
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
             [{ 'align': [] }],
-            ['link', 'image', 'video'],
+            ['link', 'image', 'video']
         ]"
         placeholder="Enter content"
         v-model:content="html"
@@ -21,6 +21,7 @@
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import ImageUploader from 'quill-image-uploader';
+import htmlEditButton from "quill-html-edit-button";
 
 export default {
     components: {
@@ -44,38 +45,49 @@ export default {
     },
 
     setup() {
-        const modules = {
-            name: 'ImageUploader',
-            module: ImageUploader,
-            options: {
-                upload: file => {
-                    return new Promise((resolve, reject) => {
-                        let token = document.head.querySelector('meta[name="csrf-token"]').content;
+        const modules = [
+            {
+                name: 'ImageUploader',
+                module: ImageUploader,
+                options: {
+                    upload: file => {
+                        return new Promise((resolve, reject) => {
+                            let token = document.head.querySelector('meta[name="csrf-token"]').content;
 
-                        const formData = new FormData();
+                            const formData = new FormData();
 
-                        formData.append('_token', token)
-                        formData.append("image", file);
+                            formData.append('_token', token)
+                            formData.append("image", file);
 
-                        fetch("/dashboard/upload/images",
-                            {
-                                method: "POST",
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                console.log(data.image)
+                            fetch("/dashboard/upload/images",
+                                {
+                                    method: "POST",
+                                    body: formData
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(data.image)
 
-                                resolve(data.image);
-                            })
-                            .catch(error => {
-                                reject("Upload failed");
-                                console.error("Error:", error)
-                            })
-                    })
-                }
+                                    resolve(data.image);
+                                })
+                                .catch(error => {
+                                    reject("Upload failed");
+                                    alert('Upload failed')
+                                    console.error("Error:", error)
+                                })
+                        })
+                    }
+                },
             },
-        }
+            {
+                name: 'htmlEditButton',
+                module: htmlEditButton,
+                options: {
+                    debug: true
+                },
+            }
+        ]
+
         return { modules }
     },
 }
