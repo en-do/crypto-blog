@@ -10,11 +10,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 use App\Services\Traits\UploadImage;
-use App\Services\Traits\ParsingArticle;
 
 class getPosts extends Command
 {
-    use UploadImage, ParsingArticle;
+    use UploadImage;
 
     protected $url;
     protected $api_key;
@@ -90,8 +89,6 @@ class getPosts extends Command
 
                     if ($count_posts > 0) {
                         foreach ($posts as $post) {
-
-                            //print_r( $this->getContent($post['url']) );
                             $this->savePost($post, $item->domain_id);
                         }
                     }
@@ -109,55 +106,44 @@ class getPosts extends Command
         $post = Post::where('title', $item['title'])->first();
         $post_url = $item['url'] ?? null;
 
-        $content = $this->getContent($post_url);
+        if (!isset($post->id)) {
+            $post = new Post;
 
-        if($content) {
-            if (!isset($post->id)) {
-                $post = new Post;
+            $post->user_id = 1;
+            $post->title = $item['title'];
 
-                $post->user_id = 1;
-                $post->title = $item['title'];
+            $post->content = $item['content'];
 
-                if ($post_url) {
-                    $post->content = trim($content);
-                } else {
-                    $post->content = $item['content'];
+            $post->slug = Str::of($item['title'])->slug('-');
+
+            if (isset($item['urlToImage'])) {
+                if (@file_get_contents($item['urlToImage'])) {
+                    $post->image = $this->uploadImage($item['urlToImage'], "images/source/post", $post->slug, 100, false);
                 }
+            }
 
-                $post->slug = Str::of($item['title'])->slug('-');
+            $post->view = rand(10, 1000);
+            $post->order = 0;
+            $post->status = 'published';
 
-                if (isset($item['urlToImage'])) {
-                    if (@file_get_contents($item['urlToImage'])) {
-                        $post->image = $this->uploadImage($item['urlToImage'], "images/source/post", $post->slug, 100, false);
-                    }
-                }
+            if ($post->saveOrfail()) {
+                $post->domains()->attach($domain_id);
 
-                $post->view = rand(10, 1000);
-                $post->order = 0;
-                $post->status = 'published';
+                $post->meta()->create([
+                    'title' => $item['title'],
+                    'description' => $item['description'] ?? null,
+                    'no_index' => 0
+                ]);
 
-                if ($post->saveOrfail()) {
-                    $post->domains()->attach($domain_id);
-
-                    $post->meta()->create([
-                        'title' => $item['title'],
-                        'description' => $item['description'] ?? null,
-                        'no_index' => 0
-                    ]);
-
-                    $id = $post->id;
-
-                    $this->line("post url: $post_url");
-                    $this->info("post ID $id created");
-                }
-            } else {
                 $id = $post->id;
+
                 $this->line("post url: $post_url");
-                $this->line("post ID $id have exists title");
+                $this->info("post ID $id created");
             }
         } else {
+            $id = $post->id;
             $this->line("post url: $post_url");
-            $this->line("secure posts");
+            $this->line("post ID $id have exists title");
         }
     }
 
